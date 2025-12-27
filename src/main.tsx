@@ -27,7 +27,7 @@ loadTheme();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   // <React.StrictMode>
-  <BrowserRouter basename='/webui/'>
+  <BrowserRouter>
     <Provider>
       <App />
     </Provider>
