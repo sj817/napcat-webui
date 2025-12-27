@@ -66,6 +66,8 @@
 
 ### 在线使用
 
+可使用 [napcat-webui.vercel.app](https://napcat-webui.vercel.app/) 进行体验。
+
 直接访问 Vercel 部署的在线版本，输入您的 NapCat 后端地址即可使用。
 
 ### 本地构建
