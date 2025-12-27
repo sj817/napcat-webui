@@ -15,7 +15,7 @@ import { Select, SelectItem } from '@heroui/select';
 import { useLocalStorage } from '@uidotdev/usehooks';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { IoClipboardOutline, IoHelpCircleOutline, IoKeyOutline, IoServerOutline } from 'react-icons/io5';
+import { IoClipboardOutline, IoKeyOutline, IoServerOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
 import key from '@/const/key';
@@ -55,7 +55,7 @@ export default function WebLoginPage () {
   // 解析粘贴的完整 URL，自动填充协议、地址、端口和 token
   const handleQuickFillChange = (value: string) => {
     setQuickFillUrl(value);
-    
+
     // 检查是否是完整的 URL 格式
     const urlPattern = /^(https?):\/\/([^/:]+)(?::(\d+))?(\/.*)?$/;
     const match = value.match(urlPattern);
@@ -86,7 +86,7 @@ export default function WebLoginPage () {
           // URL 解析失败，忽略
         }
       }
-      
+
       // 解析成功后清空输入框并提示
       setQuickFillUrl('');
       toast.success('地址解析成功');
@@ -178,6 +178,10 @@ export default function WebLoginPage () {
 
       return;
     }
+
+    // Check for Mixed Content risk
+    const isMixedContentRisk = window.location.protocol === 'https:' && baseProtocol === 'http';
+
     setIsLoading(true);
     try {
       const data = await WebUIManager.loginWithToken(tokenValue);
@@ -187,27 +191,20 @@ export default function WebLoginPage () {
         navigate('/qq_login', { replace: true });
       }
     } catch (error) {
-      toast.error((error as Error).message);
+      const err = error as Error;
+      // If we suspected a mixed content risk and got a network error, it's very likely the cause.
+      if (isMixedContentRisk && (err.message === 'Network Error' || err.message.includes('Network Error'))) {
+        toast.error('连接失败：检测到混合内容错误(Mixed Content)，请查看下方"遇到网络错误？"帮助', {
+          duration: 5000,
+        });
+        onHelpOpen();
+      } else {
+        toast.error(err.message);
+      }
     } finally {
       setIsLoading(false);
     }
   };
-
-  // 处理全局键盘事件
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' && !isLoading && !isPasskeyLoading) {
-      onSubmit();
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-
-    // 清理函数
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [tokenValue, isLoading, isPasskeyLoading]); // 依赖项包含用于登录的状态
 
   useEffect(() => {
     // 如果URL中有token，直接登录
@@ -243,15 +240,6 @@ export default function WebLoginPage () {
                 </div>
               </div>
               <ThemeSwitch className='absolute right-4 top-4' />
-              <Button
-                isIconOnly
-                variant='light'
-                className='absolute right-14 top-4'
-                onPress={onHelpOpen}
-                aria-label='帮助'
-              >
-                <IoHelpCircleOutline className='text-2xl' />
-              </Button>
             </CardHeader>
 
             <CardBody className='flex gap-5 py-5 px-5 md:px-10'>
@@ -261,6 +249,7 @@ export default function WebLoginPage () {
                 </div>
               )}
               <form
+                className='flex flex-col w-full'
                 onSubmit={(e) => {
                   e.preventDefault();
                   onSubmit();
@@ -405,6 +394,11 @@ export default function WebLoginPage () {
                 <div className='text-center text-tiny text-default-500 mt-1'>
                   系统会自动添加 /api 路径
                 </div>
+                {window.location.protocol === 'https:' && baseProtocol === 'http' && (
+                  <div className='text-center text-tiny text-warning-600 dark:text-warning-500 mt-1 font-bold cursor-pointer' onClick={onHelpOpen}>
+                    ⚠️ 检测到 HTTPS 页面连接 HTTP 后端，可能导致连接失败，点击查看解决方法
+                  </div>
+                )}
 
                 <div className='h-4' />
 
@@ -412,7 +406,7 @@ export default function WebLoginPage () {
                 <input
                   type='text'
                   name='username'
-                  value='napcat-webui'
+                  value={`${baseHost}:${basePort}`}
                   autoComplete='username'
                   className='absolute -left-[9999px] opacity-0 pointer-events-none'
                   readOnly
@@ -458,31 +452,43 @@ export default function WebLoginPage () {
                   onChange={(e) => setTokenValue(e.target.value)}
                   onClear={() => setTokenValue('')}
                 />
+
+                <div className='h-5' />
+
+                <div className='text-center text-small text-default-600 dark:text-default-400 px-2'>
+                  💡 提示：请从 NapCat 启动日志中查看登录密钥
+                </div>
+                <div className='flex justify-center mt-2'>
+                  <Link
+                    color='warning'
+                    className='text-small cursor-pointer'
+                    onPress={onHelpOpen}
+                  >
+                    🔧 遇到网络错误？
+                  </Link>
+                </div>
+                <Button
+                  className='mx-10 mt-6 text-lg py-7'
+                  color='primary'
+                  isLoading={isLoading}
+                  radius='full'
+                  size='lg'
+                  variant='shadow'
+                  type='submit'
+                >
+                  {!isLoading && (
+                    <Image
+                      alt='logo'
+                      classNames={{
+                        wrapper: '-ml-8',
+                      }}
+                      height='2em'
+                      src={logo}
+                    />
+                  )}
+                  登录
+                </Button>
               </form>
-              <div className='text-center text-small text-default-600 dark:text-default-400 px-2'>
-                💡 提示：请从 NapCat 启动日志中查看登录密钥
-              </div>
-              <Button
-                className='mx-10 mt-10 text-lg py-7'
-                color='primary'
-                isLoading={isLoading}
-                radius='full'
-                size='lg'
-                variant='shadow'
-                onPress={onSubmit}
-              >
-                {!isLoading && (
-                  <Image
-                    alt='logo'
-                    classNames={{
-                      wrapper: '-ml-8',
-                    }}
-                    height='2em'
-                    src={logo}
-                  />
-                )}
-                登录
-              </Button>
             </CardBody>
           </HoverEffectCard>
         </div>
@@ -528,7 +534,7 @@ export default function WebLoginPage () {
                       <ol className='list-decimal list-inside space-y-1 text-default-600 dark:text-default-400'>
                         <li>在地址栏输入 <Code>chrome://flags</Code></li>
                         <li>搜索 &quot;Insecure origins treated as secure&quot;</li>
-                        <li>在输入框中添加您的后端地址，如 <Code>http://localhost:6099</Code></li>
+                        <li>在输入框中添加您的后端地址，如 <Code>{`${baseProtocol}://${baseHost}:${basePort}`}</Code></li>
                         <li>将选项设置为 &quot;Enabled&quot;</li>
                         <li>点击 &quot;Relaunch&quot; 重启浏览器</li>
                       </ol>
