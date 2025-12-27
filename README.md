@@ -1,89 +1,191 @@
-<img src="https://napneko.github.io/assets/newnewlogo.png" width = "305" height = "411" alt="NapCat" align=right />
-<div align="center">
+# NapCat WebUI (独立版)
 
-# NapCat
+> ⚠️ **声明**：本仓库与 [NapCatQQ](https://github.com/NapNeko/NapCatQQ/) 官方项目无关，仅为个人维护的旧版 WebUI 分支。
 
-_Modern protocol-side framework implemented based on NTQQ._
+## 📌 项目说明
 
-> 云起兮风生，心向远方兮路未曾至.
+此仓库基于 NapCat WebUI 旧版（参见 [issue #1469](https://github.com/NapNeko/NapCatQQ/issues/1469)）提供独立部署的 WebUI 前端。
 
-</div>
+- **原作者**：[bietiaop](https://github.com/bietiaop)
+- **原仓库**：[NextNapCatWebUI](https://github.com/bietiaop/NextNapCatWebUI)
 
----
+**主要特点：**
 
-## New Feature
+- 🎨 保留旧版圆润设计风格
+- 🌐 支持独立静态站点部署，可对接任意 NapCat 后端
+- 🔗 支持自定义后端地址配置
 
-在 v4.8.115+ 版本开始
+## ✨ 功能
 
-1. NapCatQQ 支持 [Stream Api](https://napneko.github.io/develop/file)
-2. NapCatQQ 推荐 message_id/user_id/group_id 均使用字符串类型
+### 核心功能
 
-- [1] 解决 Docker/跨设备/大文件 的多媒体上下传问题
-- [2] 采用字符串可以解决扩展到int64的问题，同时也可以解决部分语言（如JavaScript）对大整数支持不佳的问题，增加极少成本。
+| 功能 | 说明 |
+|------|------|
+| 🔐 WebUI 登录 | 支持 Token 登录、Passkey 登录 |
+| 📱 QQ 登录 | 扫码登录、快速登录 |
+| 🌐 网络配置 | HTTP/WebSocket 服务器、客户端配置管理 |
+| ⚙️ 配置管理 | OneBot/WebUI 配置 |
+| 📋 日志查看 | 实时日志、历史日志查看 |
+| 🔧 HTTP 调试 | OneBot HTTP API 在线调试 |
+| 🔌 WS 调试 | OneBot WebSocket 实时调试 |
+| 💻 终端 | 在线终端 |
+| 📁 文件管理 | 在线文件浏览与管理 |
+| 🎵 音乐播放器 | 支持网易云音乐歌单（大屏在页面右下角，小屏在页面下方） |
 
-## Welcome
+### 独立部署特性
 
-- NapCatQQ is a modern implementation of the Bot protocol based on NTQQ.
-  - NapCatQQ 是现代化的基于 NTQQ 的 Bot 协议端实现
+| 功能 | 说明 |
+|------|------|
+| 📋 快速填充 | 支持粘贴终端中的完整 URL，自动解析协议、地址、端口和 Token |
+| 🔧 自定义后端 | 可配置协议（http/https）、地址、端口 |
+| 💾 配置持久化 | 后端配置保存在浏览器 localStorage |
 
-## Feature
+## 🚨 HTTPS 与 HTTP 跨域问题
 
-- **Easy to Use**
-  - 作为初学者能够轻松使用.
-- **Quick and Efficient**
-  - 在低内存操作系统长时运行.
-- **Rich API Interface**
-  - 完整实现了大部分标准接口.
-- **Stable and Reliable**
-  - 持续稳定的开发与维护.
+> **重要提示**：如果您的 WebUI 部署在 HTTPS 站点上，请注意以下限制！
 
-## Quick Start
+### 问题描述
 
-可前往 [Release](https://github.com/NapNeko/NapCatQQ/releases/) 页面下载最新版本
+当 WebUI 通过 **HTTPS** 访问时，浏览器的安全策略会阻止向 **HTTP** 后端发起请求（Mixed Content）。
 
-**首次使用**请务必查看如下文档看使用教程
+这意味着：
 
-> 项目非盈利，涉及 对接问题/基础问题/下层框架问题 请自行搜索解决，本项目社区不提供此类解答。
+- ❌ HTTPS 站点 → HTTP 后端：**被浏览器阻止**
+- ✅ HTTPS 站点 → HTTPS 后端：**正常工作**
+- ✅ HTTP 站点 → HTTP 后端：**正常工作**
 
-## Link
+### 解决方案
 
-| Docs | [![Github.IO](https://img.shields.io/badge/docs%20on-Github.IO-orange)](https://napneko.github.io/) | [![Cloudflare.Worker](https://img.shields.io/badge/docs%20on-Cloudflare.Worker-black)](https://doc.napneko.icu/) | [![Cloudflare.HKServer](https://img.shields.io/badge/docs%20on-Cloudflare.HKServer-informational)](https://napcat.napneko.icu/) |
-|:-:|:-:|:-:|:-:|
+| 方案 | 说明 |
+|------|------|
+| ✅ **推荐：后端启用 HTTPS** | 为 NapCat 后端配置 SSL 证书，使用 HTTPS 协议 |
+| ✅ **使用反向代理** | 通过 Nginx 等反向代理，在同一域名下代理后端请求 |
+| ⚠️ **HTTP 访问 WebUI** | 直接使用 HTTP 协议访问 WebUI（不推荐用于生产环境） |
 
-| Docs | [![Cloudflare.Pages](https://img.shields.io/badge/docs%20on-Cloudflare.Pages-blue)](https://napneko.pages.dev/) | [![Server.Other](https://img.shields.io/badge/docs%20on-Server.Other-green)](https://napcat.cyou/) | [![NapCat.Wiki](https://img.shields.io/badge/docs%20on-NapCat.Wiki-red)](https://www.napcat.wiki) |
-|:-:|:-:|:-:|:-:|
+## 🚀 部署方式
 
-| QQ Group | [![QQ Group#4](https://img.shields.io/badge/QQ%20Group%234-Join-blue)](https://qm.qq.com/q/CMmPbGw0jA) | [![QQ Group#3](https://img.shields.io/badge/QQ%20Group%233-Join-blue)](https://qm.qq.com/q/8zJMLjqy2Y) | [![QQ Group#2](https://img.shields.io/badge/QQ%20Group%232-Join-blue)](https://qm.qq.com/q/CMmPbGw0jA) | [![QQ Group#1](https://img.shields.io/badge/QQ%20Group%231-Join-blue)](https://qm.qq.com/q/I6LU87a0Yq) |
-|:-:|:-:|:-:|:-:|:-:|
+### 在线使用
 
-| Telegram | [![Telegram](https://img.shields.io/badge/Telegram-napcatqq-blue)](https://t.me/napcatqq) |
-|:-:|:-:|
+直接访问 Vercel 部署的在线版本，输入您的 NapCat 后端地址即可使用。
 
-| DeepWiki | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/NapNeko/NapCatQQ) |
-|:-:|:-:|
+### 本地构建
 
-> 请不要在其余社区提及本项目(包括其余协议端/相关应用端项目)引发争论，如有建议到达官方交流群讨论或PR。
+```bash
+# 克隆仓库
+git clone https://github.com/sj817/napcat-webui.git
+cd napcat-webui/napcat-webui-frontend
 
-## Thanks
+# 安装依赖
+pnpm install
 
-- [Lagrange](https://github.com/LagrangeDev/Lagrange.Core) 对本项目的大力支持 参考部分代码 已获授权
+# 开发模式
+pnpm dev
 
-- [AstrBot](https://github.com/AstrBotDevs/AstrBot) 是完美适配本项目的LLM Bot框架 在此推荐一下
+# 构建生产版本
+pnpm build
+```
 
-- [MaiBot](https://github.com/MaiM-with-u/MaiBot) 一只赛博群友 麦麦 Bot框架 在此推荐一下
+构建产物在 `dist` 目录，可部署到任意静态站点托管服务。
 
-- [qq-chat-exporter](https://github.com/shuakami/qq-chat-exporter/) 基于NapCat的消息导出工具 在此推荐一下
+## �️ 开发教程
 
-- 不过最最重要的 还是需要感谢屏幕前的你哦~
+### 环境要求
+
+- Node.js >= 18
+- pnpm >= 8
+
+### 安装 pnpm
+
+```bash
+# 使用 npm 安装
+npm install -g pnpm
+
+# 或使用 corepack（Node.js 16.13+）
+corepack enable
+corepack prepare pnpm@latest --activate
+```
+
+### 开发步骤
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/sj817/napcat-webui.git
+cd napcat-webui
+
+# 2. 安装根目录依赖
+pnpm install
+
+# 3. 进入前端目录
+cd napcat-webui-frontend
+
+# 4. 安装前端依赖
+pnpm install
+
+# 5. 启动开发服务器
+pnpm dev
+```
+
+开发服务器默认运行在 `http://localhost:5173`。
+
+### 项目结构
+
+```text
+napcat-webui-frontend/
+├── src/
+│   ├── components/     # 可复用组件
+│   ├── pages/          # 页面组件
+│   ├── hooks/          # 自定义 Hooks
+│   ├── controllers/    # 控制器（API 调用）
+│   ├── utils/          # 工具函数
+│   ├── const/          # 常量定义
+│   ├── types/          # TypeScript 类型
+│   └── styles/         # 样式文件
+├── public/             # 静态资源
+└── dist/               # 构建输出
+```
+
+### 常用命令
+
+| 命令 | 说明 |
+| ---- | ---- |
+| `pnpm dev` | 启动开发服务器 |
+| `pnpm build` | 构建生产版本 |
+| `pnpm preview` | 预览构建产物 |
+| `pnpm lint` | 代码检查 |
+
+## �📝 使用说明
+
+1. **打开登录页面**
+2. **快速填充**（推荐）：粘贴终端中复制的完整地址，如：
+
+   ```text
+   http://127.0.0.1:6099/webui?token=your_token_here
+   ```
+
+   系统会自动解析并填充协议、地址、端口和 Token
+3. **或手动配置**：分别填写协议、地址、端口和 Token
+4. **点击登录**
+
+## 🤝 反馈与贡献
+
+如果你有更多功能需求或发现问题，欢迎在 [Issues](../../issues) 中提出。
 
 ---
 
 ## License
 
-本项目采用 混合协议 开源，因此使用本项目时，你需要注意以下几点：
+[MIT](LICENSE)
 
-1. 第三方库代码或修改部分遵循其原始开源许可.
-2. 本项目获取部分项目授权而不受部分约束
-2. 项目其余逻辑代码采用[本仓库开源许可](./LICENSE).
+## Related Projects
 
-**本仓库仅用于提高易用性，实现消息推送类功能，此外，禁止任何项目未经仓库主作者授权基于 NapCat 代码开发。使用请遵守当地法律法规，由此造成的问题由使用者和提供违规使用教程者负责。**
+- [NapCatQQ](https://github.com/NapNeko/NapCatQQ/) - NapCat 官方仓库
+- [Karin](https://github.com/KarinJS/Karin/)
+
+## Thanks to
+
+- [Vercel](https://vercel.com/)
+- [React](https://react.dev/)
+- [HeroUI](https://heroui.com/)
+- and more open-source projects
+
+感谢群友"维拉"提供的在线音乐 API。
