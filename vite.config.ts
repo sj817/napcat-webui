@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
         ],
       }),
     ],
-    base: '/webui/',
+    base: '/',
     server: {
       proxy: {
         '/api/ws/terminal': {
